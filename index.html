@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ManuLink</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+  <!-- 🔴 Logo animado tipo neón -->
+  <div class="logo-container" onclick="mostrarInicio()" style="cursor: pointer;">
+    <img src="assets/Logo transparente INVERCESA.png" alt="ManuLink Logo" class="logo-neon"/>
+  </div>
+
+  <!-- 🔍 Buscador y botón favoritos -->
+  <div class="top-bar">
+    <input type="text" id="buscador" placeholder="🔍 Buscar manual...">
+    <button onclick="mostrarFavoritos()">⭐ Favoritos</button>
+  </div>
+
+  <h1>📘 Manuales Técnicos</h1>
+
+  <!-- Módulos principales -->
+  <div id="modulos-principales" class="modulos-grid">
+    <div class="modulo-card" onclick="cargarModulo('Surtidores')">
+      <img src="assets/Prime Encore 500s.png" alt="Surtidores">
+      <span>Surtidores</span>
+    </div>
+    <div class="modulo-card" onclick="cargarModulo('Veeder Root')">
+      <img src="assets/veederoot450tls.png" alt="Veeder Root">
+      <span>Veeder Root</span>
+    </div>
+    <div class="modulo-card" onclick="cargarModulo('Vox Forecourt')">
+      <img src="assets/voxforecourt.png" alt="Vox Forecourt">
+      <span>Vox Forecourt</span>
+    </div>
+    <div class="modulo-card" onclick="mostrarHerramientas()">
+      <img src="assets/herramientas.png" alt="Herramientas">
+      <span>Herramientas</span>
+    </div>
+  </div>
+
+  <!-- Submódulos dinámicos -->
+  <div id="submodulos"></div>
+
+  <!-- 🛠 Herramientas -->
+  <div id="contenido-herramientas" style="display:none">
+    <h2>🧰 Herramientas disponibles</h2>
+    <ul id="listaHerramientas" class="herramientas-lista"></ul>
+    <button onclick="mostrarInicio()">⬅ Volver al menú</button>
+  </div>
+
+  <!-- Visor PDF -->
+  <div id="visorPDF" class="oculto">
+    <div class="visor-bar">
+      <button class="btn-cerrar" onclick="cerrarVisor()">✖️</button>
+      <button class="btn-favorito" onclick="agregarFavoritoDesdeVisor()">⭐ Añadir a Favoritos</button>
+    </div>
+    <iframe id="pdfFrame" width="100%" height="100%"></iframe>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    // Muestra el menú principal
+    function mostrarInicio() {
+      document.getElementById('modulos-principales').style.display = 'grid';
+      document.getElementById('submodulos').innerHTML = '';
+      document.getElementById('contenido-herramientas').style.display = 'none';
+      document.getElementById('visorPDF').classList.add('oculto');
+    }
+
+    // Mostrar herramientas disponibles para descargar
+    async function mostrarHerramientas() {
+      document.getElementById('modulos-principales').style.display = 'none';
+      document.getElementById('submodulos').innerHTML = '';
+      document.getElementById('contenido-herramientas').style.display = 'block';
+
+      const lista = document.getElementById('listaHerramientas');
+      lista.innerHTML = '🔄 Cargando...';
+
+      try {
+        const res = await fetch('/api/herramientas');
+        const archivos = await res.json();
+
+        if (!archivos.length) {
+          lista.innerHTML = '<li>⚠️ No hay herramientas disponibles.</li>';
+          return;
+        }
+
+        lista.innerHTML = '';
+        archivos.forEach(nombre => {
+          const li = document.createElement('li');
+          li.innerHTML = `
+            <span>${nombre}</span>
+            <a href="/herramientas/${encodeURIComponent(nombre)}" download>
+              <img src="assets/download.png" alt="Descargar" style="width: 24px; vertical-align: middle; margin-left: 8px;">
+            </a>
+          `;
+          lista.appendChild(li);
+        });
+      } catch (err) {
+        lista.innerHTML = '<li>❌ Error al cargar herramientas.</li>';
+      }
+    }
+  </script>
+</body>
+</html>
