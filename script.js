@@ -269,5 +269,14 @@ function agregarFavoritoDesdeVisor() {
   agregarAFavoritos(modulo, submodulo, archivo);
 }
 
+async function cargarDatos() {
+  const res = await fetch('/api/manuales');  // Pide al backend el JSON con la estructura
+  const manuales = await res.json();         // Lo convierte a objeto JS
+  // Aquí usas manuales para crear botones, listas, etc...
+  console.log(manuales);
+}
+cargarDatos();
+
+
 // Al cargar la página
 cargarDatos();
